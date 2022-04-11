@@ -5,6 +5,7 @@
 import { Request } from './Request';
 import axios from 'axios';
 import { Payload } from './Payloads/Payload';
+import { Ray } from './Ray';
 
 export class Client {
     public static rayState: boolean | null = true;
@@ -120,7 +121,15 @@ export class Client {
             let resp;
 
             try {
-                resp = await axios.get(this.getUrlForPath(`/locks/${lockName}`));
+                const queryString = {
+                    hostname: Ray.client.host,
+                    project_name: Ray.projectName,
+                };
+
+                resp = await axios.get(
+                    this.getUrlForPath(`/locks/${lockName}?hostname=${queryString.hostname}&project_name=${queryString.project_name}`),
+                    {},
+                );
             } catch (err) {
                 // ignore errors, i.e. connection failed
                 return false;
